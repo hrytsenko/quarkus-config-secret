@@ -1,0 +1,2 @@
+secret:
+  password: secret-file:${PASSWORD_FILE}
