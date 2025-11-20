@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +25,8 @@ class SecretFileConfigTest {
 
   @SneakyThrows
   @Test
-  void readSecretFile() {
-    Path sourceFile = Files.createTempFile("password", "");
+  void readSecret_fileIsPresent() {
+    var sourceFile = Files.createTempFile("password", "");
     Files.writeString(sourceFile, "P@ssw0rd");
 
     var sourceProperty = ConfigValue.builder()
@@ -42,7 +41,7 @@ class SecretFileConfigTest {
   }
 
   @Test
-  void secretFileNotFound() {
+  void readSecret_fileIsAbsent() {
     var sourceProperty = ConfigValue.builder()
         .withName("password")
         .withValue("secret-file:password.txt")
