@@ -20,7 +20,9 @@ public class SecretFileConfig implements ConfigSourceInterceptor {
   @Override
   public ConfigValue getValue(ConfigSourceInterceptorContext context, String name) {
     var property = context.proceed(name);
-    if (property == null || !property.getValue().startsWith(SECRET_FILE_PREFIX)) {
+    if (property == null
+        || property.getValue() == null
+        || !property.getValue().startsWith(SECRET_FILE_PREFIX)) {
       return property;
     }
     log.info("Secret property '{}' with value '{}'", property.getName(), property.getValue());
