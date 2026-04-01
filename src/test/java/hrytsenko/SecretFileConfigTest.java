@@ -1,7 +1,7 @@
 package hrytsenko;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -29,28 +29,36 @@ class SecretFileConfigTest {
     var sourceFile = Files.createTempFile("password", "");
     Files.writeString(sourceFile, "P@ssw0rd");
 
-    var sourceProperty = ConfigValue.builder()
-        .withName("password")
-        .withValue("secret-file:" + sourceFile)
-        .build();
-    doReturn(sourceProperty).when(context).proceed("password");
+    var sourceValue = "secret-file:" + sourceFile;
+    var actualConfig = handlePassword(sourceValue);
 
-    var actualProperty = interceptor.getValue(context, "password");
-
-    assertEquals("P@ssw0rd", actualProperty.getValue());
+    assertEquals("P@ssw0rd", actualConfig.getValue());
   }
 
   @Test
   void readSecret_fileIsAbsent() {
+    var sourceValue = "secret-file:password.txt";
+    var actualConfig = handlePassword(sourceValue);
+
+    assertEquals(sourceValue, actualConfig.getValue());
+  }
+
+  @Test
+  void readSecret_valueIsAbsent() {
+    var actualProperty = handlePassword(null);
+
+    assertNull(actualProperty.getValue());
+  }
+
+  ConfigValue handlePassword(String value) {
+    String name = "password";
     var sourceProperty = ConfigValue.builder()
-        .withName("password")
-        .withValue("secret-file:password.txt")
+        .withName(name)
+        .withValue(value)
         .build();
-    doReturn(sourceProperty).when(context).proceed("password");
+    doReturn(sourceProperty).when(context).proceed(name);
 
-    var actualProperty = interceptor.getValue(context, "password");
-
-    assertSame(sourceProperty, actualProperty);
+    return interceptor.getValue(context, name);
   }
 
 }
